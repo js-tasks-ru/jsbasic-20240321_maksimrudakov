@@ -1,5 +1,19 @@
 let calculator = {
-  // ваш код
+
+   // защита от дурака- если отсутсвует частичный или полный сет аргументов
+   read(a = null, b = null) {
+      this.a = a;
+      this.b = b;
+   },
+
+   sum() {
+      return this.a + this.b;
+   },
+
+   mul() {
+      return this.a * this.b;
+   },
+   
 };
 
 // НЕ УДАЛЯТЬ СТРОКУ, НУЖНА ДЛЯ ПРОВЕРКИ
