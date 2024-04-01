@@ -1,5 +1,5 @@
 function getMinMax(str) {
-  
+
   const tempArr = str
       .split(` `)
       .map(element => Number(element)) // приведем к числу все элементы массива заранее 
