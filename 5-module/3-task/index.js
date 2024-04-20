@@ -7,18 +7,35 @@ function initCarousel() {
   const step = carousel.offsetWidth;
   let currentStep = 0;
 
-  const countPictures = (carousel.getElementsByClassName('carousel__slide')).length;
+  const countPictures = (carousel.querySelectorAll('.carousel__slide')).length;//
+
+  
+
+  function check_Picture_Left_Side() {
+  
+    return (currentStep == 0)? true : false;
+  }
+  
+  
+  function check_Picture_Right_Side() {
+    
+    return (currentStep == -step * (countPictures-1))? true : false;
+  }
 
 
-  if (currentStep == 0) 
-  leftButton.style.display = 'none';
+
+  if (check_Picture_Left_Side()) {
+        leftButton.style.display = 'none';
+  }
+  else if (check_Picture_Right_Side()) 
+        rightButton.style.display = 'none';
   
   
 ////////////////////////////////////////////////////////////////////
 
  rightButton.addEventListener('click', () => {                    
 
-   if (currentStep == 0) 
+   if (check_Picture_Left_Side()) 
    leftButton.style.display = '';
 
 
@@ -26,7 +43,7 @@ function initCarousel() {
     carousel.style.transform = `translateX(${currentStep}px)`;
 
 
-    if (currentStep == -step * (countPictures-1)) 
+    if (check_Picture_Right_Side()) 
    rightButton.style.display = 'none';
   })
 
@@ -34,7 +51,7 @@ function initCarousel() {
 
   leftButton.addEventListener('click', () => {
 
-    if (currentStep == -step * (countPictures-1)) 
+    if (check_Picture_Right_Side()) 
     rightButton.style.display = '';
 
 
@@ -42,7 +59,7 @@ function initCarousel() {
     carousel.style.transform = `translateX(${currentStep}px)`;
 
 
-    if (currentStep == 0) 
+    if (check_Picture_Left_Side()) 
     leftButton.style.display = 'none';
   })
 

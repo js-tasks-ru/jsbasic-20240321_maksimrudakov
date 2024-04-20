@@ -7,7 +7,6 @@ function toggleText() {
 
     const text = document.querySelector('[id="text"]');
 
-    text.hidden = (text.hidden == false) ? true :
-                                           false
+    text.hidden = !text.hidden;
   })
 }

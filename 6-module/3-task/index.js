@@ -5,68 +5,96 @@ export default class Carousel {
   elem = 'null';
   #slides = [];
 
-  constructor(slides) {
+  constructor(slides = this.#slides) {
 
     this.#slides = slides;
 
-    this.elem = createElement(`
-  
-  <div class="carousel">
-    <div class="carousel__arrow carousel__arrow_right">
-      <img src="/assets/images/icons/angle-icon.svg" alt="icon">
-    </div>
-    <div class="carousel__arrow carousel__arrow_left">
-      <img src="/assets/images/icons/angle-left-icon.svg" alt="icon">
-    </div>
-
-    <div class="carousel__inner">
-    
-    ${ this.#slides.map((obj) => ` 
-    <div class="carousel__slide" data-id="${obj.id}">
-        <img src="/assets/images/carousel/${obj.image}" class="carousel__img" alt="slide">
-        <div class="carousel__caption">
-          <span class="carousel__price">€${obj.price.toFixed(2)}</span>
-          <div class="carousel__title">${obj.name}</div>
-          <button type="button" class="carousel__button">
-            <img src="/assets/images/icons/plus-icon.svg" alt="icon">
-          </button>
-        </div>
-      </div>`).join('\n')}
-  </div>
-  `)
+    this.elem = this.#render();
 
   this.#initCarousel();
+  this.#clickAdd();
  
   }
 
-#initCarousel = () => {
+
+
+  #render() {
+
+    return createElement(`
+  
+    <div class="carousel">
+      <div class="carousel__arrow carousel__arrow_right">
+        <img src="/assets/images/icons/angle-icon.svg" alt="icon">
+      </div>
+      <div class="carousel__arrow carousel__arrow_left">
+        <img src="/assets/images/icons/angle-left-icon.svg" alt="icon">
+      </div>
+  
+      <div class="carousel__inner">
+      
+      ${ this.#slides.map((obj) => ` 
+      <div class="carousel__slide" data-id="${obj.id}">
+          <img src="/assets/images/carousel/${obj.image}" class="carousel__img" alt="slide">
+          <div class="carousel__caption">
+            <span class="carousel__price">€${obj.price.toFixed(2)}</span>
+            <div class="carousel__title">${obj.name}</div>
+            <button type="button" class="carousel__button">
+              <img src="/assets/images/icons/plus-icon.svg" alt="icon">
+            </button>
+          </div>
+        </div>`).join('\n')}
+    </div>
+    `)
+
+  }
+
+
+
+#initCarousel() {
 
   const leftButton = this.elem.querySelector('.carousel__arrow_left');
   const rightButton = this.elem.querySelector('.carousel__arrow_right');
 
   const carousel = this.elem.querySelector('.carousel__inner');
-  const step = carousel.offsetWidth;
+  
   let currentStep = 0;
+ 
+  const countPictures = (carousel.querySelectorAll('.carousel__slide')).length;
 
-  const countPictures = (carousel.getElementsByClassName('carousel__slide')).length;
+
+  function check_Picture_Left_Side() {
+  
+    return (currentStep == 0)? true : false;
+  }
+  
+  
+  function check_Picture_Right_Side() {
+    
+    return (currentStep == -carousel.offsetWidth * (countPictures-1))? true : false;
+  }
 
 
-  if (currentStep == 0) 
-  leftButton.style.display = 'none';
+
+  if (check_Picture_Left_Side()) {
+        leftButton.style.display = 'none';
+  }
+  else if(check_Picture_Right_Side()) 
+        rightButton.style.display = 'none';
   
   
 ////////////////////////////////////////////////////////////////////
 
  rightButton.addEventListener('click', () => {                    
 
-   if (currentStep == 0) 
+   if (check_Picture_Left_Side()) 
    leftButton.style.display = '';
 
-    currentStep -= step;
+   
+    currentStep -= carousel.offsetWidth;
     carousel.style.transform = `translateX(${currentStep}px)`;
 
 
-    if (currentStep == -step * (countPictures-1)) 
+    if (check_Picture_Right_Side()) 
    rightButton.style.display = 'none';
   })
 
@@ -74,18 +102,36 @@ export default class Carousel {
 
   leftButton.addEventListener('click', () => {
 
-    if (currentStep == -step * (countPictures-1)) 
+    if (check_Picture_Right_Side()) 
     rightButton.style.display = '';
 
-    currentStep += step;
+
+    currentStep += carousel.offsetWidth;
     carousel.style.transform = `translateX(${currentStep}px)`;
 
 
-    if (currentStep == 0) 
+    if (check_Picture_Left_Side()) 
     leftButton.style.display = 'none';
   })
 
 ///////////////////////////////////////////////////////////////////
-}
+  }
+
+
+
+#clickAdd() {
+
+  
+this.buttons = Array.from(this.elem.querySelectorAll('.carousel__button')) 
+
+this.buttons.map( (but, i) => {but.addEventListener("click", () => {  
+
+    but.dispatchEvent(new CustomEvent("product-add", {
+          detail: this.#slides[i].id, 
+         bubbles: true,
+      })) 
+    })})
+
+  }
 
 }
