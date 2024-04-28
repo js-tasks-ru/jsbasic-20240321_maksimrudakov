@@ -65,7 +65,7 @@ export default class StepSlider {
   #clickSlider() {
     
     const thumb = this.elem.querySelector('.slider__thumb'); 
-    thumb.addEventListener('pointerdown', this.#onDown);   
+    thumb.addEventListener('click', this.#onDown);   
   }
   
   #onDown = (event) => {
@@ -142,7 +142,6 @@ export default class StepSlider {
     this.#initValue(); 
     this.#selectStep();
   }
-
 
 
 
