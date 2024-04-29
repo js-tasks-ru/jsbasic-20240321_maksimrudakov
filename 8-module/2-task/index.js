@@ -45,13 +45,23 @@ export default class ProductGrid {
 
 
       const createProducts = this.products.filter( product => {       
-
- return ((this.#filters.noNuts === false) || (this.#filters.noNuts !== product.nuts)) &&
-        ((this.#filters.vegeterianOnly === false) || (this.#filters.vegeterianOnly === product.vegeterian)) &&
-        ((this.#filters.maxSpiciness >= product.spiciness)) &&
-        ((!this.#filters.category) || (this.#filters.category === product.category))       
-
-
+        if (this.#filters.noNuts && product.nuts) {
+          return false;
+        }
+  
+        if (this.#filters.vegeterianOnly && !product.vegeterian) {
+          return false;
+        }
+  
+        if (this.#filters.maxSpiciness && product.spiciness > this.#filters.maxSpiciness) {
+          return false;
+        }
+  
+        if (this.#filters.category && product.category !== this.#filters.category) {
+          return false;
+        }
+  
+        return true;     
    })
 
   this.productsTag.textContent = '';

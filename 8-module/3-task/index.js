@@ -1,30 +1,23 @@
 export default class Cart {
   cartItems = []; // [product: {...}, count: N]
-  elem = '';
+  
 
   constructor(cartIcon) {
     this.cartIcon = cartIcon;
   }
 
-  addProduct(product) { // спросить про использование напрямую данный аргумент в коде - что подсвечивается тусклым.
-
-    this.tempProduct = product; 
-
-    if(this.tempProduct === null || this.tempProduct === undefined)
+  addProduct(product) {
+    if(!product)
       return;
     
-      const index = this.cartItems.findIndex(obj => obj.product.name === this.tempProduct.name);
+      const index = this.cartItems.findIndex(obj => obj.product.name === product.name);
 
-
-      if (index)
-      cartItems[index].count += 1;
+      if (index > -1)
+      this.cartItems[index].count += 1;
       else
-      cartItems.push({product: tempProduct, count: 1})
+      this.cartItems.push({product: product, count: 1})
 
-
-      this.onProductUpdate(cartItem)
-
-    // ваш код
+      this.onProductUpdate(this.cartItem);
   }
 
 
@@ -32,45 +25,50 @@ export default class Cart {
 
 
   updateProductCount(productId, amount) {
-
-
     const index = this.cartItems.findIndex(obj => obj.product.id === productId);
 
+    if (index === -1)
+    return
 
-    if (amount == 1)
-    cartItems[index].count += 1;
-    else
-    cartItems[index].count -= 1;
+    if (amount === 1) {    
+      this.cartItems[index].count += 1;
+    } else {  
+      if(this.cartItems[index].count === 1)
+        this.cartItems.splice(index, 1);
+      else
+        this.cartItems[index].count -= 1;
+    }
 
-
-    if(cartItems[index].count <= 0)
-    cartItems.splice(index, 1);
-
-
-    this.onProductUpdate(cartItem)
-
-
-    // ваш код
+    this.onProductUpdate(this.cartItem);
   }
 
 
 
 
-  isEmpty() {
-    
-    (cartItems.length)? false: true;
-    // ваш код
+  isEmpty() {   
+    return (this.cartItems.length === 0)? true : false;
   }
 
 
 
-  
+
   getTotalCount() {
-    // ваш код
+    const sum = this.cartItems.reduce(function (currentSum, obj) {
+      return currentSum + obj.count
+    }, 0);
+
+    return sum
   }
+
+
+
 
   getTotalPrice() {
-    // ваш код
+    const sum = this.cartItems.reduce(function (currentSum, obj) {
+      return currentSum + obj.product.price * obj.count
+    }, 0);
+
+    return sum
   }
 
   onProductUpdate(cartItem) {

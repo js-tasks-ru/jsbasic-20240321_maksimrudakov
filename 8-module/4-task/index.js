@@ -13,23 +13,55 @@ export default class Cart {
   }
 
   addProduct(product) {
-    // СКОПИРУЙТЕ СЮДЯ СВОЙ КОД
+    if(!product)
+      return;
+    
+      const index = this.cartItems.findIndex(obj => obj.product.name === product.name);
+
+      if (index > -1)
+      this.cartItems[index].count += 1;
+      else
+      this.cartItems.push({product: product, count: 1})
+
+      this.onProductUpdate(this.cartItem);
   }
 
   updateProductCount(productId, amount) {
-    // СКОПИРУЙТЕ СЮДЯ СВОЙ КОД
+    const index = this.cartItems.findIndex(obj => obj.product.id === productId);
+
+    if (index === -1)
+    return
+
+    if (amount === 1) {    
+      this.cartItems[index].count += 1;
+    } else {  
+      if(this.cartItems[index].count === 1)
+        this.cartItems.splice(index, 1);
+      else
+        this.cartItems[index].count -= 1;
+    }
+
+    this.onProductUpdate(this.cartItem);
   }
 
   isEmpty() {
-    // СКОПИРУЙТЕ СЮДЯ СВОЙ КОД
+    return (this.cartItems.length === 0)? true : false;
   }
 
   getTotalCount() {
-    // СКОПИРУЙТЕ СЮДЯ СВОЙ КОД
+    const sum = this.cartItems.reduce(function (currentSum, obj) {
+      return currentSum + obj.count
+    }, 0);
+
+    return sum
   }
 
   getTotalPrice() {
-    // СКОПИРУЙТЕ СЮДЯ СВОЙ КОД
+    const sum = this.cartItems.reduce(function (currentSum, obj) {
+      return currentSum + obj.product.price * obj.count
+    }, 0);
+
+    return sum
   }
 
   renderProduct(product, count) {
@@ -84,8 +116,48 @@ export default class Cart {
   }
 
   renderModal() {
-    // ...ваш код
+  let modal = new Modal();
+    modal.setTitle('Your order');
+
+    let shoppingList = document.createElement('div');
+
+    for (let i = 0; i < this.cartItems.length; i++)
+    shoppingList.append(this.renderProduct(this.cartItems[i].product, this.cartItems[i].count));
+
+    
+
+    shoppingList.append(this.renderOrderForm());
+
+    modal.setBody(shoppingList);
+    modal.open();
+
+    
+
+
+    let buttonPlus = Array.from(document.querySelectorAll('.cart-product'));
+
+    buttonPlus.forEach(function (elem) {
+      elem.addEventListener('click', function (e) {
+
+       
+        // alert(`${elem.closest('data-product-id')}`);
+        // alert(elem.closest("productId"));
+        alert(`${elem.dataset.productId}`);
+        alert(`${e.target.className}`)
+       
+      
+      })
+    })
+
+
+   
+
+   
   }
+
+
+
+
 
   onProductUpdate(cartItem) {
     // ...ваш код
@@ -102,3 +174,47 @@ export default class Cart {
   }
 }
 
+
+
+    // let modal = new Modal();
+    // modal.setTitle('Your order');
+
+    // let shoppingList = document.createElement('div');
+
+    // for (let i = 0; i < this.cartItems.length; i++)
+    // shoppingList.append(this.renderProduct(this.cartItems[i].product, this.cartItems[i].count));
+
+    
+
+    // shoppingList.append(this.renderOrderForm());
+
+    // modal.setBody(shoppingList);
+    // modal.open();
+
+
+
+
+    // let buttonPlus = Array.from(shoppingList.querySelectorAll('.cart-counter__button cart-counter__button_plus'));
+
+    // buttonPlus.forEach(function (elem) {
+    //   elem.addEventListener('click', function (e) {
+
+    //    alert(e.querySelector('.data-product-id'));
+      
+    //   })
+    // })
+
+
+
+    // let buttonPlus = Array.from(document.querySelectorAll('.cart-product'));
+
+    // buttonPlus.forEach(function (elem) {
+    //   elem.addEventListener('click', function () {
+
+    //     alert('hi');
+    //     alert(`${elem.dataset.productId}`);
+    //     alert(`${event.target.className}`)
+    //    alert(this.querySelector('.data-product-id'));
+      
+    //   })
+    // })

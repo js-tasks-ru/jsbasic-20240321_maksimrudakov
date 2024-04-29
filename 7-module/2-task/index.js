@@ -2,11 +2,11 @@ import createElement from '../../assets/lib/create-element.js';
 
 export default class Modal {
 
-  #elem = 'null';
+  elem = 'null';
 
   constructor() {
 
-    this.#elem = this.#render();
+    this.elem = this.#render();
 
     this.clickClose();
 
@@ -15,7 +15,6 @@ export default class Modal {
 
 
   #render() {
-
     return createElement (`
     
     <div class="modal">
@@ -46,16 +45,15 @@ export default class Modal {
 
 
   open() {
-
-    document.body.append(this.#elem);
+    document.body.append(this.elem);
+    
     document.body.classList.add("is-modal-open");
   }
 
 
 
-  setTitle(text) {
-    
-    const title = this.#elem.querySelector('.modal__title')
+  setTitle(text) {   
+    const title = this.elem.querySelector('.modal__title')
 
     title.textContent = text;
   }
@@ -63,8 +61,7 @@ export default class Modal {
 
 
   setBody(text) {
-
-    const modalBody = this.#elem.querySelector('.modal__body')
+    const modalBody = this.elem.querySelector('.modal__body')
 
     modalBody.innerHTML= text.outerHTML;
   }
@@ -72,7 +69,6 @@ export default class Modal {
 
 
   close() {
-
     document.body.classList.remove("is-modal-open");
     document.body.innerHTML = "";
   }
@@ -80,11 +76,9 @@ export default class Modal {
 
 
   clickClose() {
-
-    const buttonX = this.#elem.querySelector('.modal__close');
+    const buttonX = this.elem.querySelector('.modal__close');
 
     buttonX.addEventListener('click', () => {
-
       this.close();
     })
   }
@@ -92,7 +86,6 @@ export default class Modal {
 
 
   keyboardClose() {
-
     document.addEventListener('keydown', (event) => {
 
       if (event.code == 'Escape')
