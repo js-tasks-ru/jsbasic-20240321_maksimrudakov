@@ -23,10 +23,6 @@ export default class StepSlider {
 
     this.#initThumbSlider();
 
-    this.#clickSlider();
-
-
-
     this.#initStart(); 
   }
 
@@ -51,55 +47,48 @@ export default class StepSlider {
   }
 
 
-
   #initStart() {
-    this.#clickSlider(); 
-    
-    this.progress = this.elem.querySelector('.slider__progress');
     this.thumb = this.elem.querySelector('.slider__thumb'); 
-
+    this.progress = this.elem.querySelector('.slider__progress');
+    
     this.thumb.addEventListener('pointerdown', this.#onDown);   
+    // this.elem.addEventListener('click', this.#onClick);
   }
 
 
 
   #onDown = (event) => {
+    event.ondragstart = (e) => e.preventDefault();
+
     document.addEventListener('pointermove', this.#onMove);
     document.addEventListener('pointerup', this.#onUp);
-
-    event.ondragstart = (e) => e.preventDefault();
-    
-    this.positionSlider = this.elem.getBoundingClientRect().left; // позиция левого края слайдера
-    this.widthSlider = this.elem.offsetWidth; // ширина слайдера 
   };
 
 
 
   #onMove = (event) => {
     this.elem.classList.add("slider_dragging"); // добавим класс
-    this.thumb.removeEventListener('pointerdown', this.#onDown) // удалим событие
 
-    let shiftX = event.clientX - this.positionSlider; // позиция курсора относительно слайдера
-    this.#value = Math.round((shiftX / this.widthSlider) * (this.#steps)); // вычисленное целое значение положения ползунка
+    this.positionSlider = this.elem.getBoundingClientRect().left; // позиция левого края слайдера
+    this.widthSlider = this.elem.offsetWidth; // ширина слайдера 
+
+    this.shiftX = event.clientX - this.positionSlider; // позиция курсора относительно слайдера
+    this.#value = Math.round((this.shiftX / this.widthSlider) * (this.#steps)); // вычисленное целое значение положения ползунка
   
-    let coef = shiftX / this.widthSlider; // коэффициент ползунка
+    let coef = this.shiftX / this.widthSlider; // коэффициент ползунка
 
-    if(coef < 0) {
+    if (coef < 0) {
       coef = 0;
-      this.#value = 0;
     }
-
+    
     if (coef > 1) {
-      coef = 1;  
-      this.#value = this.#steps
+      coef = 1;
     }
-
-    let percents = coef * 100;
-
-    // let percents = shiftX * 100 / this.widthSlider;
-
-    this.thumb.style.left = `${percents}%`;
-    this.progress.style.width = `${percents}%`;
+    
+    let leftPercents = coef * 100;
+    
+    this.thumb.style.left = `${leftPercents}%`;
+    this.progress.style.width = `${leftPercents}%`;
     this.#initValue(); 
     this.#selectStep();
   };
@@ -108,7 +97,11 @@ export default class StepSlider {
 
 
   #onUp = (event) => {
+    document.removeEventListener('pointerup', this.#onUp); 
     document.removeEventListener('pointermove', this.#onMove);
+    // this.elem.removeEventListener('click', this.#onClick);
+
+    this.#onClick();
 
      this.elem.dispatchEvent(new CustomEvent("slider-change", {
             detail: this.#value, 
@@ -116,79 +109,22 @@ export default class StepSlider {
      }))
 
      this.elem.classList.remove("slider_dragging"); // удалим класс
-
-     let shiftX = event.clientX - this.positionSlider; // позиция курсора относительно слайдера
-     this.#value = Math.round((shiftX / this.widthSlider) * (this.#steps)); // вычисленное целое значение положения ползунка
-   
-     let coef = shiftX / this.widthSlider; // коэффициент ползунка
- 
-     if(coef < 0) {
-       coef = 0;
-       this.#value = 0;
-     }
- 
-     if (coef > 1) {
-       coef = 1;  
-       this.#value = this.#steps
-     }
- 
-     let percents = this.#value / (this.#steps) * 100; 
-
-     this.thumb.style.left = `${percents}%`;
-     this.progress.style.width = `${percents}%`;
-     this.#initValue(); 
-     this.#selectStep();
-
-
-     document.removeEventListener('pointerup', this.#onUp); 
-
-     this.#initStart(); //без обращения к этой функции ползунок нормально не работает, иначе приходиться перезагружать страницу
  };
 
 
 
- #clickSlider() { // закрыть событие click не могу!!! 
-  this.elem.addEventListener('click', (event) => {
-
-   let shiftX = event.clientX - this.positionSlider; // позиция курсора относительно слайдера
-  this.#value = Math.round((shiftX / this.widthSlider) * (this.#steps)); // вычисленное целое значение положения ползунка
-
-  let coef = shiftX / this.widthSlider; // коэффициент ползунка
-
-  if(coef < 0) {
-    coef = 0;
-    this.#value = 0;
-  }
-
-  if (coef > 1) {
-    coef = 1;  
-    this.#value = this.#steps
-  }
-
-  // let percents = coef * 100;
-
+ #onClick = () => {
   let percents = this.#value / (this.#steps) * 100;
 
   this.thumb.style.left = `${percents}%`;
   this.progress.style.width = `${percents}%`;
   this.#initValue(); 
   this.#selectStep();
-    
-
-
-    // this.elem.dispatchEvent(new CustomEvent("slider-change", {
-    //   detail: this.#value, 
-    //  bubbles: true,
-    // }))
-  })
-}
+ }
 
 
 
-
-  #initSliderSteps() {
-
-    
+  #initSliderSteps() {    
     let sliderSteps = this.elem.querySelector('.slider__steps');
 
     for (let i = 0; i <= this.#steps; i++)
@@ -199,14 +135,12 @@ export default class StepSlider {
 
 
   #initValue() {
-
     this.elem.querySelector('.slider__value').textContent = this.#value;
   }
 
 
 
   #selectStep() {
-
     let span = Array.from(this.elem.querySelectorAll('span'));
 
     span.map( (a, i) => {  
@@ -225,7 +159,6 @@ export default class StepSlider {
 
 
   #initThumbSlider() {
-
     let percents = this.#value / (this.#steps) * 100;
 
     let thumb = this.elem.querySelector('.slider__thumb');
