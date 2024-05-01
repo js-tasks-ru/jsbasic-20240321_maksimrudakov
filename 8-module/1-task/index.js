@@ -12,9 +12,13 @@ export default class CartIcon {
     this.addEventListeners();
   }
 
+
+  
   render() {
     this.elem = createElement('<div class="cart-icon"></div>');
   }
+
+
 
   update(cart) {
     if (!cart.isEmpty()) {
@@ -38,15 +42,16 @@ export default class CartIcon {
     }
   }
 
+
+
   addEventListeners() {
     document.addEventListener('scroll', () => this.updatePosition());
     window.addEventListener('resize', () => this.updatePosition());
   }
   
+
+
   updatePosition() {
-    
-   
-  
     if (!!this.elem.offsetWidth && !!this.elem.offsetHeight) {
 
       if(!this.flag)

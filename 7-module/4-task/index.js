@@ -52,7 +52,8 @@ export default class StepSlider {
     this.progress = this.elem.querySelector('.slider__progress');
     
     this.thumb.addEventListener('pointerdown', this.#onDown);   
-    // this.elem.addEventListener('click', this.#onClick);
+    this.elem.addEventListener('click', this.#onClick);
+    
   }
 
 
@@ -79,10 +80,12 @@ export default class StepSlider {
 
     if (coef < 0) {
       coef = 0;
+      this.#value = 0;
     }
     
     if (coef > 1) {
       coef = 1;
+      this.#value = this.#steps;
     }
     
     let leftPercents = coef * 100;
@@ -99,9 +102,13 @@ export default class StepSlider {
   #onUp = (event) => {
     document.removeEventListener('pointerup', this.#onUp); 
     document.removeEventListener('pointermove', this.#onMove);
-    // this.elem.removeEventListener('click', this.#onClick);
 
-    this.#onClick();
+    let percents = this.#value / (this.#steps) * 100;
+
+    this.thumb.style.left = `${percents}%`;
+    this.progress.style.width = `${percents}%`;
+    this.#initValue(); 
+    this.#selectStep();
 
      this.elem.dispatchEvent(new CustomEvent("slider-change", {
             detail: this.#value, 
@@ -113,14 +120,25 @@ export default class StepSlider {
 
 
 
- #onClick = () => {
-  let percents = this.#value / (this.#steps) * 100;
+ 
+  #onClick = (e) => {
+    let {x}= this.elem.getBoundingClientRect();
+    let widthSlider = this.elem.offsetWidth;
+    let posCursor = e.clientX - x;
 
-  this.thumb.style.left = `${percents}%`;
-  this.progress.style.width = `${percents}%`;
-  this.#initValue(); 
-  this.#selectStep();
- }
+    this.#value = Math.round((posCursor / widthSlider) * (this.#steps));
+  
+    this.#initValue();
+    this.#selectStep();
+    this.#initThumbSlider();
+
+
+    this.elem.dispatchEvent(new CustomEvent("slider-change", {
+      detail: this.#value, 
+     bubbles: true,
+    }))
+  };
+ 
 
 
 
@@ -130,7 +148,7 @@ export default class StepSlider {
     for (let i = 0; i <= this.#steps; i++)
         sliderSteps.innerHTML += `<span></span>\n`;
 
-  }
+  };
 
 
 
