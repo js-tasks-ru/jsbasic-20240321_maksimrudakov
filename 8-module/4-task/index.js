@@ -10,8 +10,6 @@ export default class Cart {
     this.cartIcon = cartIcon;
 
     this.addEventListeners();
-
-    this.onSubmit();
   }
 
   addProduct(product) {
@@ -143,6 +141,10 @@ export default class Cart {
       
      });
     })
+
+
+    this.form = document.querySelector('.cart-form');
+    this.form.addEventListener('submit', this.onSubmit);
   }
 
 
@@ -191,17 +193,17 @@ export default class Cart {
 
 
 
-  onSubmit() {
-    this.form = document.querySelector('.cart-form');
+  onSubmit = (event) => {
+    // this.form = document.querySelector('.cart-form');
 
-    // if(!this.form)
-    // return
+    
+    // // if(!this.form)
+    // // return
 
-    this.form.addEventListener('submit', (event) => {
+    // this.form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      this.buttonSubmit = document.querySelector('submit');
-      this.buttonSubmit.classList.add('is-loading');
+      
       
       const formData = new FormData(this.form);
   
@@ -212,6 +214,8 @@ export default class Cart {
          
       promiseResponse
       .then((response) => {
+        this.buttonSubmit = document.querySelector('.cart-buttons__button.btn-group__button.button');
+        this.buttonSubmit.classList.add('is-loading');
         this.modal.setTitle('Success!');
         this.cartItems.length = 0;
         this.modal.setBody( createElement(`
@@ -223,8 +227,7 @@ export default class Cart {
           </p>
        </div>
         `));
-        })
-      })
+      })    
     }
    
   
