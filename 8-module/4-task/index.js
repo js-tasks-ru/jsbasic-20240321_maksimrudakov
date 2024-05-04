@@ -248,7 +248,10 @@ this.updateProductCount(product.dataset.productId, -1);
        </div>
         `));
         this.removeEvents();
-      })    
+      })  
+      .catch(() => {
+        console.error(error);
+      });  
     }
    
   
