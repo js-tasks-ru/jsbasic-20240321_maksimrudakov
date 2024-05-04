@@ -5,11 +5,13 @@ import Modal from '../../7-module/2-task/index.js';
 
 export default class Cart {
   cartItems = []; // [product: {...}, count: N]
+  #elemCartProduct = null;
 
   constructor(cartIcon) {
     this.cartIcon = cartIcon;
 
     this.addEventListeners();
+    // this.addEvent();
   }
 
   addProduct(product) {
@@ -122,31 +124,59 @@ export default class Cart {
 
     this.modal.setBody(shoppingList);
     this.modal.open();
+ 
 
-    // накидываем события на кнопки +/-
-    let listProduct = Array.from(document.querySelectorAll('.cart-product'));
+    this.addEvents(); // создаем обработчиков на кнопки
 
-    listProduct.forEach( elem => {
-      let buttonPlus = elem.querySelector('.cart-counter__button_plus');
-      buttonPlus.addEventListener('click',() => {
-       
-        this.updateProductCount(elem.dataset.productId, 1);
-     });
-
-
-    let buttonMinus = elem.querySelector('.cart-counter__button_minus');
-    buttonMinus.addEventListener('click',() => {
-     
-      this.updateProductCount(elem.dataset.productId, -1);
-      
-     });
-    })
-
-
-    this.form = document.querySelector('.cart-form');
-    this.form.addEventListener('submit', this.onSubmit);
+    this.buttonSubmit = document.querySelector('button[type="submit"]');
+    
   }
 
+ addEvents() {
+      let listProduct = Array.from(document.querySelectorAll('.cart-product'));
+
+      listProduct.forEach( elem => {
+        this.#elemCartProduct = elem;
+        let buttonPlus = elem.querySelector('.cart-counter__button_plus');
+        buttonPlus.addEventListener('click', this.addPlus);
+
+      let buttonMinus = elem.querySelector('.cart-counter__button_minus');
+      buttonMinus.addEventListener('click', this.addPMinus);
+      });
+
+      this.form = document.querySelector('.cart-form');
+      this.form.addEventListener('submit', this.onSubmit);
+ }
+
+
+addPlus = (event) => {
+  const product = event.target.closest('.cart-product');
+this.updateProductCount(product.dataset.productId, 1);
+}
+
+
+
+addPMinus = (event) => {
+  const product = event.target.closest('.cart-product');
+this.updateProductCount(product.dataset.productId, -1);
+}
+
+
+
+  removeEvents() {
+    let listProduct = Array.from(document.querySelectorAll('.cart-product'));
+
+      listProduct.forEach( elem => {
+        let buttonPlus = elem.querySelector('.cart-counter__button_plus');
+        buttonPlus.removeEventListener('click', this.addPlus);
+
+      let buttonMinus = elem.querySelector('.cart-counter__button_minus');
+      buttonMinus.removeEventListener('click', this.addPMinus);
+      });
+
+      // this.form = document.querySelector('.cart-form');
+      this.form.removeEventListener('submit', this.onSubmit);
+  }
 
 
 
@@ -185,7 +215,6 @@ export default class Cart {
     this.modal.close();
 
 
-
     this.cartIcon.update(this);
   }
 
@@ -194,17 +223,8 @@ export default class Cart {
 
 
   onSubmit = (event) => {
-    // this.form = document.querySelector('.cart-form');
-
-    
-    // // if(!this.form)
-    // // return
-
-    // this.form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      
-      
       const formData = new FormData(this.form);
   
       const promiseResponse = fetch('https://httpbin.org/post', {
@@ -214,7 +234,7 @@ export default class Cart {
          
       promiseResponse
       .then((response) => {
-        this.buttonSubmit = document.querySelector('.cart-buttons__button.btn-group__button.button');
+        //let buttonSubmit = document.querySelector('button[type="submit"]');
         this.buttonSubmit.classList.add('is-loading');
         this.modal.setTitle('Success!');
         this.cartItems.length = 0;
@@ -227,6 +247,7 @@ export default class Cart {
           </p>
        </div>
         `));
+        this.removeEvents();
       })    
     }
    
