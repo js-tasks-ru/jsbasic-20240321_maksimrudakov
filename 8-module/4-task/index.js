@@ -11,7 +11,6 @@ export default class Cart {
     this.cartIcon = cartIcon;
 
     this.addEventListeners();
-    // this.addEvent();
   }
 
   addProduct(product) {
@@ -111,8 +110,10 @@ export default class Cart {
     </form>`);
   }
 
+
   renderModal() {
   this.modal = new Modal();
+
   this.modal.setTitle('Your order');
 
     let shoppingList = document.createElement('div');
@@ -209,11 +210,9 @@ this.updateProductCount(product.dataset.productId, -1);
       // Элемент с суммарной стоимостью всех товаров
       let infoPrice = modalBody.querySelector(`.cart-buttons__info-price`);
       infoPrice.textContent = `€${summPrice.toFixed(2)}`;
-    }
-   
+    }  
     if(this.getTotalCount() === 0)
     this.modal.close();
-
 
     this.cartIcon.update(this);
   }
@@ -234,7 +233,6 @@ this.updateProductCount(product.dataset.productId, -1);
          
       promiseResponse
       .then((response) => {
-        //let buttonSubmit = document.querySelector('button[type="submit"]');
         this.buttonSubmit.classList.add('is-loading');
         this.modal.setTitle('Success!');
         this.cartItems.length = 0;
